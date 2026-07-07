@@ -65,10 +65,10 @@ body {
 }
 
 .screen--settings {
-  background-image: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 25%, transparent), color-mix(in srgb, var(--bg) 80%, transparent)), url('settings.png?v=3');
+  background-image: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 25%, transparent), color-mix(in srgb, var(--bg) 80%, transparent)), url('settings.svg?v=2');
   background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
+  background-position: center bottom;
+  background-size: auto 35%;
 }
 
 /* ------------------------------------------------------------
