@@ -58,10 +58,10 @@ body {
 }
 
 .screen--countdown {
-  background-image: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 20%, transparent), color-mix(in srgb, var(--bg) 75%, transparent)), url('main.png?v=2');
+  background-image: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 20%, transparent), color-mix(in srgb, var(--bg) 75%, transparent)), url('main.svg?v=2');
   background-repeat: no-repeat;
   background-position: center bottom;
-  background-size: cover;
+  background-size: contain;
 }
 
 .screen--settings {
