@@ -636,7 +636,11 @@ body {
 
   .screen--countdown {
     flex-direction: column;
-    background-image: url('main.svg?v=2');
+    background-image: 
+      linear-gradient(to bottom, 
+        color-mix(in srgb, var(--bg) 20%, transparent), 
+        color-mix(in srgb, var(--bg) 75%, transparent)),
+      url('main.svg?v=2');
     background-position: center bottom;
     background-size: contain;
   }
@@ -682,7 +686,12 @@ body {
   }
 
   .screen--settings {
-    background-image: url('settings.svg?v=2');
+    background-image: 
+      linear-gradient(to bottom, 
+        color-mix(in srgb, var(--bg) 25%, transparent), 
+        color-mix(in srgb, var(--bg) 80%, transparent)),
+      url('settings.svg?v=2');
     background-position: center bottom;
+    background-size: auto 35%;
   }
 }
