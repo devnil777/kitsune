@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Кицунэ — преврати дедлайн в свою суперсилу</title>
+<meta name="description" content="Обратный отсчёт до контрольных точек дня">
+<meta name="theme-color" content="#424247">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ЭКРАН: ОТСЧЁТ -->
+  <section class="screen screen--countdown" id="screen-countdown" data-active="true">
+
+    <!-- Шапка: дата + день недели + время -->
+    <header class="hero-header">
+      <div class="hero-header__left">
+        <span class="hero-date" id="today-date">—</span>
+        <span class="hero-weekday" id="weekday">—</span>
+      </div>
+      <span class="hero-time" id="current-time">—</span>
+    </header>
+
+    <!-- Кольцо -->
+    <div class="ring-section">
+      <div class="ring-wrap" id="ring-wrap">
+        <svg class="ring" viewBox="0 0 240 240" id="ring-svg">
+          <circle class="ring__track" cx="120" cy="120" r="110"/>
+          <circle class="ring__progress" id="ring-progress" cx="120" cy="120" r="110"/>
+          <circle class="ring__second-dot" id="ring-second-dot" cx="120" cy="10" r="5"/>
+        </svg>
+        <div class="ring__content">
+          <div class="timer" id="timer">—</div>
+          <div class="timer-caption" id="timer-caption">осталось</div>
+        </div>
+      </div>
+
+      <p class="no-points-msg" id="no-points-msg" hidden>
+        добавьте время на вкладке «Настройки»
+      </p>
+
+      <!-- Цель: до XX:XX -->
+      <div class="target-line" id="target-line"></div>
+    </div>
+
+    <!-- Список точек -->
+    <div class="points-section">
+      <div class="points-list" id="points-list"></div>
+    </div>
+
+  </section>
+
+  <!-- ЭКРАН: НАСТРОЙКИ -->
+  <section class="screen screen--settings" id="screen-settings" data-active="false">
+
+    <header class="topbar">
+      <div class="date-block">
+        <span class="date-block__title">Настройки</span>
+        <span class="date-block__sub">контрольные точки</span>
+      </div>
+    </header>
+
+    <div class="settings-body">
+
+      <div class="settings-divider"></div>
+
+      <!-- Добавление точки -->
+      <label class="add-row">
+        <input type="time" id="new-time" class="time-input" />
+        <button class="add-btn" id="add-btn" aria-label="Добавить точку">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </label>
+
+      <ul class="deadline-list" id="deadline-list"></ul>
+      <p class="hint" id="list-hint">Точки на день ещё не добавлены</p>
+    </div>
+
+  </section>
+
+  <nav class="tabbar" aria-label="Навигация">
+    <button class="tab" data-target="screen-countdown" data-tab="countdown" aria-current="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+      <span>Отсчёт</span>
+    </button>
+    <button class="tab" data-target="screen-settings" data-tab="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.6"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l1.9-1.5-2-3.4-2.3.9a7.6 7.6 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5a7.6 7.6 0 0 0-2.6 1.5l-2.3-.9-2 3.4L4.6 10.5a7.6 7.6 0 0 0 0 3L2.7 15l2 3.4 2.3-.9a7.6 7.6 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.6 7.6 0 0 0 2.6-1.5l2.3.9 2-3.4-1.9-1.5Z"/></svg>
+      <span>Настройки</span>
+    </button>
+  </nav>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
