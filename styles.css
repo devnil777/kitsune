@@ -64,6 +64,13 @@ body {
   background-size: contain;
 }
 
+.countdown-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .screen--settings {
   background-image: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 25%, transparent), color-mix(in srgb, var(--bg) 80%, transparent)), url('settings.svg?v=2');
   background-repeat: no-repeat;
@@ -500,29 +507,72 @@ body {
     font-size: 28px;
   }
 
+  .screen--countdown {
+    flex-direction: row;
+    background-position: center center, left center;
+    background-size: cover, auto 100%;
+  }
+
+  .screen--countdown::before {
+    content: '';
+    flex-shrink: 0;
+    align-self: stretch;
+    aspect-ratio: 506 / 595;
+    margin-right: 0;
+  }
+
+  .countdown-body {
+    flex: 1;
+    margin-left: 0;
+    min-width: 0;
+  }
+
   .ring-section {
     flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
     padding: 6px 22px 0;
   }
 
   .ring-wrap {
-    width: min(30dvh, 180px);
+    width: min(25dvh, 150px);
+    aspect-ratio: 1;
   }
 
   .timer {
     font-size: clamp(18px, 5dvh, 30px);
   }
 
+  .target-line {
+    flex-shrink: 0;
+    font-size: clamp(14px, 2.5dvh, 20px);
+    text-align: left;
+  }
+
+  .points-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .tabbar {
+    justify-content: center;
+  }
+
   .tab {
+    flex: none;
     flex-direction: row;
     gap: 6px;
-    padding: 8px 0;
+    padding: 8px 16px;
   }
 }
 
 @media (max-height: 480px) and (orientation: landscape) {
   .ring-wrap {
-    width: min(26dvh, 150px);
+    width: min(44dvh, 250px);
   }
 
   .timer {
