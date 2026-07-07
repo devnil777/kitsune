@@ -21,3 +21,11 @@ Chrome/Samsung Internet → меню → «Добавить на главный 
 - `styles.css` — тёмная/светлая тема, портрет/ландшафт
 - `app.js` — вся логика, хранение в localStorage
 - `manifest.json`, `sw.js`, `icons/` — PWA-обвязка
+
+
+Цвета приложения
+#CCCCDB
+#EDEDFF
+#424247
+#5F5F66
+#B9B9C7

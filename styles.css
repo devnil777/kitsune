@@ -3,12 +3,12 @@
 ------------------------------------------------------------- */
 :root {
   --bg: #424247;
-  --surface: rgba(95, 95, 102, 0.6);
-  --surface-2: rgba(95, 95, 102, 0.75);
+  --surface: rgba(95, 95, 102, 0.8);
+  --surface-2: rgba(95, 95, 102, 0.85);
   --text: #EDEDFF;
-  --text-dim: #CCCCDB;
-  --border: rgba(95, 95, 102, 0.4);
-  --track: #5F5F66;
+  --text-dim: #B9B9C7;
+  --border: rgba(185, 185, 199, 0.25);
+  --track: #B9B9C7;
 
   --font-body: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Consolas, monospace;
@@ -254,15 +254,15 @@ body {
 }
 
 .chip[data-state="next"] {
-  border-color: #B9B9C7;
+  border-color: #CCCCDB;
   color: var(--text);
-  background: color-mix(in srgb, #B9B9C7 14%, var(--surface));
+  background: color-mix(in srgb, #CCCCDB 14%, var(--surface));
 }
 
 .chip[data-selected="true"] {
-  border-color: #5F5F66 !important;
-  color: #EDEDFF !important;
-  background: #5F5F66 !important;
+  border-color: #B9B9C7 !important;
+  color: #424247 !important;
+  background: #B9B9C7 !important;
   text-decoration: none !important;
   opacity: 1 !important;
 }
@@ -343,7 +343,7 @@ body {
 }
 
 .time-input:focus {
-  border-color: #B9B9C7;
+  border-color: #CCCCDB;
 }
 
 .time-input::-webkit-calendar-picker-indicator {
@@ -359,8 +359,8 @@ body {
   height: 52px;
   border-radius: 14px;
   border: none;
-  background: #5F5F66;
-  color: #EDEDFF;
+  background: #B9B9C7;
+  color: #424247;
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -438,7 +438,7 @@ body {
   font-weight: 600;
   background: transparent;
   border: none;
-  border-bottom: 1.5px solid #B9B9C7;
+  border-bottom: 1.5px solid #CCCCDB;
   color: var(--text);
   width: 80px;
   outline: none;
