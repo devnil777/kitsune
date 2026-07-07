@@ -583,3 +583,106 @@ body {
     font-size: 22px;
   }
 }
+
+/* ------------------------------------------------------------
+   Desktop
+------------------------------------------------------------- */
+@media (min-width: 900px) {
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: 
+      linear-gradient(to bottom, 
+        color-mix(in srgb, var(--bg) 20%, transparent), 
+        color-mix(in srgb, var(--bg) 75%, transparent)),
+      var(--bg);
+  }
+
+  .app {
+    position: relative;
+    width: 440px;
+    max-width: 100vw;
+    height: min(90dvh, 760px);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  }
+
+  .app::before,
+  .app::after {
+    content: '';
+    position: absolute;
+    top: -22px;
+    z-index: 5;
+    width: 0;
+    height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-bottom: 28px solid var(--surface);
+    filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.3));
+  }
+
+  .app::before {
+    left: 80px;
+    transform: rotate(-12deg);
+  }
+
+  .app::after {
+    right: 80px;
+    transform: rotate(12deg);
+  }
+
+  .screen--countdown {
+    flex-direction: column;
+    background-image: url('main.svg?v=2');
+    background-position: center bottom;
+    background-size: contain;
+  }
+
+  .screen--countdown::before {
+    display: none;
+  }
+
+  .countdown-body {
+    flex: 1;
+    margin-left: 0;
+    min-width: auto;
+  }
+
+  .ring-section {
+    flex-direction: column;
+  }
+
+  .ring-wrap {
+    width: min(40dvh, 280px);
+  }
+
+  .target-line {
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .points-list {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  .tabbar {
+    justify-content: center;
+  }
+
+  .tab {
+    flex: none;
+    flex-direction: row;
+    gap: 6px;
+    padding: 10px 20px;
+  }
+
+  .screen--settings {
+    background-image: url('settings.svg?v=2');
+    background-position: center bottom;
+  }
+}
