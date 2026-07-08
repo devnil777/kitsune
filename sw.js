@@ -1,4 +1,4 @@
-const CACHE = "deadline-v1";
+const CACHE = "deadline-__CACHE_VERSION__";
 const ASSETS = [
   "./",
   "./index.html",
@@ -8,6 +8,8 @@ const ASSETS = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-512-maskable.png",
+  "./main.svg",
+  "./settings.svg",
 ];
 
 self.addEventListener("install", (e) => {
