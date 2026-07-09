@@ -2,6 +2,26 @@
   "use strict";
 
   const STORAGE_KEY = "deadline-points";
+
+  // ---------- firebase ----------
+  const firebaseConfig = {
+    apiKey: "AIzaSyDsUsWc_WjHWrtQ9iyMiBhyJpFnWpQZaoY",
+    authDomain: "kitsune-3500d.firebaseapp.com",
+    projectId: "kitsune-3500d",
+    storageBucket: "kitsune-3500d.firebasestorage.app",
+    messagingSenderId: "462556838619",
+    appId: "1:462556838619:web:a7cf1ae3336caf2fb56afe"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  db.enablePersistence().catch(() => {});
+  const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+  let currentUser = null;
+  let unsubSnapshot = null;
+  let isFromCloud = false;
+
   const RING_R      = 104;
   const RING_CIRC   = 2 * Math.PI * RING_R;
 
@@ -31,6 +51,11 @@
     listHint:     document.getElementById("list-hint"),
     app:          document.getElementById("app"),
     secondDot:    document.getElementById("ring-second-dot"),
+    authBtn:       document.getElementById("auth-btn"),
+    authSection:   document.getElementById("auth-section"),
+    userInfo:      document.getElementById("user-info"),
+    userEmail:     document.getElementById("user-email"),
+    logoutBtn:     document.getElementById("logout-btn"),
   };
 
   // ---------- состояние ----------
@@ -43,6 +68,7 @@
   }
   function saveDeadlines(list) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    if (!isFromCloud && currentUser) pushToCloud(list);
   }
   function isValidTime(v) {
     return typeof v === "string" && /^([01]\d|2[0-3]):([0-5]\d)$/.test(v);
@@ -51,6 +77,50 @@
   let deadlines = loadDeadlines();
   let selectedTargetTime = null;
   let swipeDirection = null;
+
+  // ---------- firebase auth & sync ----------
+  auth.getRedirectResult().catch(() => {});
+
+  auth.onAuthStateChanged(user => {
+    currentUser = user;
+    if (user) {
+      el.authSection.hidden = true;
+      el.userInfo.hidden = false;
+      el.userEmail.textContent = user.email;
+      subscribeToCloud();
+    } else {
+      el.authSection.hidden = false;
+      el.userInfo.hidden = true;
+      if (unsubSnapshot) { unsubSnapshot(); unsubSnapshot = null; }
+    }
+  });
+
+  function subscribeToCloud() {
+    if (unsubSnapshot) unsubSnapshot();
+    unsubSnapshot = db.collection("settings").doc(currentUser.uid)
+      .onSnapshot(doc => {
+        if (doc.exists && doc.data()?.deadlinePoints) {
+          isFromCloud = true;
+          deadlines = doc.data().deadlinePoints.filter(isValidTime).sort();
+          saveDeadlines(deadlines);
+          renderSettings();
+          renderCountdown();
+          isFromCloud = false;
+        } else {
+          pushToCloud(deadlines);
+        }
+      }, () => {});
+  }
+
+  function pushToCloud(list) {
+    db.collection("settings").doc(currentUser.uid).set({
+      deadlinePoints: list,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(() => {});
+  }
+
+  el.authBtn.addEventListener("click", () => auth.signInWithPopup(googleProvider));
+  el.logoutBtn.addEventListener("click", () => auth.signOut());
 
   // ---------- навигация ----------
   const screenOrder = ["screen-countdown", "screen-settings"];
