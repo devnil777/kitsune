@@ -44,9 +44,13 @@
         </div>
       </div>
 
-      <p class="no-points-msg" id="no-points-msg" hidden>
-        добавьте время на вкладке «Настройки»
-      </p>
+      <div class="cta" id="cta" hidden>
+        <p class="no-points-msg">здесь будут ваши контрольные точки</p>
+        <button class="cta-btn" id="cta-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Добавить время
+        </button>
+      </div>
 
       <!-- Цель: до XX:XX -->
       <div class="target-line" id="target-line"></div>
@@ -100,6 +104,8 @@
   </nav>
 
 </div>
+
+  <input type="time" id="hidden-time-picker" style="position:fixed;opacity:0;pointer-events:none;width:1px;height:1px" />
 
 <script src="app.js"></script>
 </body>

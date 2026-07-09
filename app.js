@@ -22,6 +22,9 @@
     ringProgress: document.getElementById("ring-progress"),
     ringWrap:     document.getElementById("ring-wrap"),
     noPointsMsg:  document.getElementById("no-points-msg"),
+    cta:          document.getElementById("cta"),
+    ctaBtn:       document.getElementById("cta-btn"),
+    hiddenPicker: document.getElementById("hidden-time-picker"),
     newTime:      document.getElementById("new-time"),
     addBtn:       document.getElementById("add-btn"),
     deadlineList: document.getElementById("deadline-list"),
@@ -68,7 +71,7 @@
     });
   });
 
-  // ---------- свайп ----------
+  // ---------- свайпы ----------
   let swipeStartX = 0;
   let swipeStartY = 0;
   let swipeMoved  = false;
@@ -85,9 +88,55 @@
     if (!swipeMoved) return;
     const dx = e.changedTouches[0].clientX - swipeStartX;
     const dy = e.changedTouches[0].clientY - swipeStartY;
-    if (Math.abs(dx) < 40 || Math.abs(dy) > Math.abs(dx) * 0.9) return;
-    switchToScreen(dx < 0 ? activeScreenIdx + 1 : activeScreenIdx - 1);
+
+    // Горизонтальный свайп — переключение экрана
+    if (Math.abs(dx) >= 40 && Math.abs(dy) < Math.abs(dx) * 0.9) {
+      switchToScreen(dx < 0 ? activeScreenIdx + 1 : activeScreenIdx - 1);
+      return;
+    }
+
+    // Вертикальный свайп — смена цели (только на экране отсчёта)
+    if (Math.abs(dy) >= 60 && Math.abs(dx) < Math.abs(dy) * 0.9) {
+      if (activeScreenIdx !== 0) return;
+      const now = new Date();
+      const todayPoints = deadlines.map(t => ({ time: t, date: timeToDateToday(now, t) }));
+      if (todayPoints.length < 2) return;
+
+      let idx = todayPoints.findIndex(p => p.time === selectedTargetTime);
+      if (idx === -1) {
+        idx = todayPoints.findIndex(p => p.date.getTime() > now.getTime());
+        if (idx === -1) idx = todayPoints.length - 1;
+      }
+
+      if (dy < 0) {
+        idx = (idx + 1) % todayPoints.length;
+      } else {
+        idx = (idx - 1 + todayPoints.length) % todayPoints.length;
+      }
+
+      // не даём выбрать прошедшую точку
+      if (todayPoints[idx].date.getTime() <= now.getTime()) return;
+
+      selectedTargetTime = todayPoints[idx].time;
+      renderCountdown();
+    }
   }, { passive: true });
+
+  // ---------- быстрый выбор времени со стартового экрана ----------
+  el.ctaBtn.addEventListener("click", () => {
+    el.hiddenPicker.value = "";
+    el.hiddenPicker.showPicker();
+  });
+
+  el.hiddenPicker.addEventListener("change", () => {
+    const val = el.hiddenPicker.value;
+    if (!isValidTime(val) || deadlines.includes(val)) return;
+    deadlines.push(val);
+    deadlines.sort();
+    saveDeadlines(deadlines);
+    renderSettings();
+    renderCountdown();
+  });
 
   // ---------- добавление / удаление / редактирование ----------
   el.addBtn.addEventListener("click", () => {
@@ -204,25 +253,42 @@
   // ---------- рендер точек под кольцом ----------
   function renderPointsList(todayPoints, upcoming, now) {
     el.pointsList.innerHTML = "";
-    todayPoints.forEach(p => {
+    const centerTime = selectedTargetTime || (upcoming[0] && upcoming[0].time);
+
+    function renderChip(p) {
       const chip = document.createElement("span");
       chip.className = "chip";
-      const isNext = upcoming[0] && upcoming[0].time === p.time;
-      chip.dataset.state = p.date.getTime() <= now.getTime() ? "done" : (isNext ? "next" : "upcoming");
-      if (selectedTargetTime === p.time) {
-        chip.dataset.selected = "true";
-      }
+      chip.dataset.state = p.date.getTime() <= now.getTime() ? "done" : "upcoming";
+      if (selectedTargetTime === p.time || centerTime === p.time) chip.dataset.selected = "true";
       chip.textContent = p.time;
       chip.addEventListener("click", () => {
-        if (selectedTargetTime === p.time) {
-          selectedTargetTime = null;
-        } else {
-          selectedTargetTime = p.time;
-        }
+        if (p.date.getTime() <= now.getTime() || selectedTargetTime === p.time) return;
+        selectedTargetTime = p.time;
         renderCountdown();
       });
       el.pointsList.appendChild(chip);
-    });
+    }
+
+    if (!centerTime) return;
+    const centerIdx = todayPoints.findIndex(p => p.time === centerTime);
+    if (centerIdx === -1) return;
+
+    if (todayPoints.length <= 3) {
+      todayPoints.forEach(p => renderChip(p));
+      return;
+    }
+
+    if (centerIdx === 0) {
+      const end = Math.min(centerIdx + 3, todayPoints.length);
+      for (let i = centerIdx; i < end; i++) renderChip(todayPoints[i]);
+    } else if (centerIdx === todayPoints.length - 1) {
+      const start = Math.max(0, centerIdx - 2);
+      for (let i = start; i <= centerIdx; i++) renderChip(todayPoints[i]);
+    } else {
+      const start = centerIdx - 1;
+      const end = Math.min(start + 3, todayPoints.length);
+      for (let i = start; i < end; i++) renderChip(todayPoints[i]);
+    }
   }
 
   // ---------- основной рендер отсчёта ----------
@@ -234,18 +300,26 @@
     const upcoming    = todayPoints.filter(p => p.date.getTime() > now.getTime());
 
     if (deadlines.length === 0) {
-      el.noPointsMsg.hidden   = false;
+      el.cta.hidden           = false;
       el.ringWrap.hidden      = true;
       el.targetLine.textContent = "";
       el.pointsList.innerHTML = "";
       el.ringProgress.style.strokeDashoffset = RING_CIRC;
+      document.title = "Кицунэ — преврати дедлайн в свою суперсилу";
       return;
     }
 
-    el.noPointsMsg.hidden = true;
+    el.cta.hidden = true;
     el.ringWrap.hidden    = false;
 
     renderPointsList(todayPoints, upcoming, now);
+
+    if (selectedTargetTime) {
+      const sel = todayPoints.find(p => p.time === selectedTargetTime);
+      if (!sel || sel.date.getTime() <= now.getTime()) {
+        selectedTargetTime = null;
+      }
+    }
 
     let target = null;
     if (selectedTargetTime) {
@@ -261,6 +335,7 @@
       el.timerCaption.textContent = "всё выполнено";
       el.targetLine.textContent   = "";
       el.ringProgress.style.strokeDashoffset  = "0";
+      document.title = "Кицунэ — преврати дедлайн в свою суперсилу";
       return;
     }
 
@@ -271,12 +346,14 @@
       el.timerCaption.textContent = "выполнено";
       el.targetLine.textContent   = `до ${target.time}`;
       el.ringProgress.style.strokeDashoffset  = "0";
+      document.title = "Кицунэ — преврати дедлайн в свою суперсилу";
       return;
     }
 
     el.timer.textContent        = humanDuration(diff);
     el.timerCaption.textContent = "осталось";
     el.targetLine.textContent   = `до ${target.time}`;
+    document.title = `${humanDuration(diff)} | Кицунэ`;
 
     const idx      = todayPoints.findIndex(p => p.time === target.time);
     const prevPoint = idx > 0 ? todayPoints[idx - 1].date : startOfDay(now);

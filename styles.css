@@ -221,6 +221,41 @@ body {
   margin: 0;
 }
 
+/* CTA при пустом списке */
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 32px 22px;
+}
+
+.cta-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 28px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.cta-btn:active {
+  background: var(--surface-2);
+}
+
+.cta[hidden] {
+  display: none;
+}
+
 /* ------------------------------------------------------------
    ОТСЧЁТ — Список точек (нижняя часть)
 ------------------------------------------------------------- */
@@ -267,9 +302,9 @@ body {
 }
 
 .chip[data-selected="true"] {
-  border-color: #B9B9C7 !important;
-  color: #424247 !important;
-  background: #B9B9C7 !important;
+  border-color: #CCCCDB;
+  color: var(--text);
+  background: color-mix(in srgb, #CCCCDB 14%, var(--surface));
   text-decoration: none !important;
   opacity: 1 !important;
 }
