@@ -50,6 +50,7 @@
 
   let deadlines = loadDeadlines();
   let selectedTargetTime = null;
+  let swipeDirection = null;
 
   // ---------- навигация ----------
   const screenOrder = ["screen-countdown", "screen-settings"];
@@ -118,6 +119,7 @@
       if (todayPoints[idx].date.getTime() <= now.getTime()) return;
 
       selectedTargetTime = todayPoints[idx].time;
+      swipeDirection = dy < 0 ? "up" : "down";
       renderCountdown();
     }
   }, { passive: true });
@@ -306,6 +308,7 @@
       el.pointsList.innerHTML = "";
       el.ringProgress.style.strokeDashoffset = RING_CIRC;
       document.title = "Кицунэ — преврати дедлайн в свою суперсилу";
+      swipeDirection = null;
       return;
     }
 
@@ -336,6 +339,7 @@
       el.targetLine.textContent   = "";
       el.ringProgress.style.strokeDashoffset  = "0";
       document.title = "Кицунэ — преврати дедлайн в свою суперсилу";
+      swipeDirection = null;
       return;
     }
 
@@ -347,6 +351,7 @@
       el.targetLine.textContent   = `до ${target.time}`;
       el.ringProgress.style.strokeDashoffset  = "0";
       document.title = "Кицунэ — преврати дедлайн в свою суперсилу";
+      swipeDirection = null;
       return;
     }
 
@@ -360,6 +365,10 @@
     const progress  = clamp((now.getTime() - prevPoint.getTime()) / (target.date.getTime() - prevPoint.getTime()), 0, 1);
     el.ringProgress.style.strokeDashoffset = String(RING_CIRC * (1 - progress));
 
+    if (swipeDirection) {
+      animateSwipe(swipeDirection);
+      swipeDirection = null;
+    }
   }
 
   // ---------- анимация секундной стрелки ----------
@@ -372,6 +381,18 @@
       el.secondDot.setAttribute("transform", `rotate(${deg}, 120, 120)`);
     }
     requestAnimationFrame(animateSecondDot);
+  }
+
+  // ---------- анимация смены цели при свайпе ----------
+  function animateSwipe(dir) {
+    [el.timer, el.timerCaption, el.targetLine].forEach(el => {
+      delete el.dataset.swipe;
+      void el.offsetWidth;
+      el.dataset.swipe = dir;
+      el.addEventListener("animationend", () => {
+        delete el.dataset.swipe;
+      }, { once: true });
+    });
   }
 
   // ---------- инициализация ----------

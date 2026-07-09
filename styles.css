@@ -194,6 +194,7 @@ body {
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.05;
+  display: inline-block;
 }
 
 .timer-caption {
@@ -201,6 +202,7 @@ body {
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--text-dim);
+  display: inline-block;
 }
 
 .target-line {
@@ -211,6 +213,24 @@ body {
   color: var(--text-dim);
   letter-spacing: 0.01em;
   min-height: 1.4em;
+}
+
+.timer[data-swipe="up"],
+.timer-caption[data-swipe="up"],
+.target-line[data-swipe="up"] {
+  animation: swipeUp 0.3s ease-out;
+}
+.timer[data-swipe="down"],
+.timer-caption[data-swipe="down"],
+.target-line[data-swipe="down"] {
+  animation: swipeDown 0.3s ease-out;
+}
+
+@keyframes swipeUp {
+  from { transform: translateY(18px); opacity: 0.3; }
+}
+@keyframes swipeDown {
+  from { transform: translateY(-18px); opacity: 0.3; }
 }
 
 .no-points-msg {
