@@ -2,6 +2,7 @@
   "use strict";
 
   const STORAGE_KEY = "deadline-points";
+  const NOTIFICATIONS_KEY = "notifications-enabled";
 
   // ---------- firebase ----------
   const firebaseConfig = {
@@ -56,6 +57,8 @@
     userInfo:      document.getElementById("user-info"),
     userEmail:     document.getElementById("user-email"),
     logoutBtn:     document.getElementById("logout-btn"),
+    notificationRow:   document.getElementById("notification-row"),
+    notificationToggle: document.getElementById("notification-toggle"),
   };
 
   // ---------- состояние ----------
@@ -77,6 +80,7 @@
   let deadlines = loadDeadlines();
   let selectedTargetTime = null;
   let swipeDirection = null;
+  let notificationsEnabled = loadNotificationsEnabled();
 
   // ---------- firebase auth & sync ----------
   auth.getRedirectResult().catch(() => {});
@@ -196,6 +200,7 @@
 
   // ---------- быстрый выбор времени со стартового экрана ----------
   el.ctaBtn.addEventListener("click", () => {
+    requestNotificationPermission();
     el.hiddenPicker.value = "";
     el.hiddenPicker.showPicker();
   });
@@ -212,6 +217,7 @@
 
   // ---------- добавление / удаление / редактирование ----------
   el.addBtn.addEventListener("click", () => {
+    requestNotificationPermission();
     const val = el.newTime.value;
     if (!isValidTime(val)) return;
     if (!deadlines.includes(val)) {
@@ -259,9 +265,21 @@
     });
   }
 
+  el.notificationToggle.addEventListener("change", () => {
+    saveNotificationsEnabled(el.notificationToggle.checked);
+    if (el.notificationToggle.checked) requestNotificationPermission();
+    renderCountdown();
+  });
+
   function renderSettings() {
     el.deadlineList.innerHTML = "";
     el.listHint.hidden = deadlines.length > 0;
+    if ("Notification" in window) {
+      el.notificationRow.hidden = false;
+      el.notificationToggle.checked = notificationsEnabled;
+    } else {
+      el.notificationRow.hidden = true;
+    }
     deadlines.forEach(time => {
       const li = document.createElement("li");
       li.className = "deadline-item";
@@ -310,6 +328,31 @@
     if (h === 0 && m === 0) return `${s} сек`;
     if (h === 0) return `${m} мин`;
     return `${h} ч ${m} мин`;
+  }
+
+  function loadNotificationsEnabled() {
+    try {
+      return localStorage.getItem(NOTIFICATIONS_KEY) !== "false";
+    } catch (e) { return true; }
+  }
+
+  function saveNotificationsEnabled(val) {
+    localStorage.setItem(NOTIFICATIONS_KEY, val ? "true" : "false");
+    notificationsEnabled = val;
+  }
+
+  async function requestNotificationPermission() {
+    if (!("Notification" in window)) return;
+    if (Notification.permission !== "default") return;
+    try { await Notification.requestPermission(); } catch (e) {}
+  }
+
+  async function sendStateToSW(state) {
+    try {
+      if (navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage(state);
+      }
+    } catch (e) {}
   }
 
   // ---------- рендер шапки ----------
@@ -372,6 +415,7 @@
     const upcoming    = todayPoints.filter(p => p.date.getTime() > now.getTime());
 
     if (deadlines.length === 0) {
+      sendStateToSW({ type: "COUNTDOWN", targetTimestamp: null, targetLabel: null, allDone: false, hasDeadlines: false, enabled: false, visible: true });
       el.cta.hidden           = false;
       el.ringWrap.hidden      = true;
       el.targetLine.textContent = "";
@@ -403,7 +447,12 @@
     }
 
     if (!target) {
-      // Все точки пройдены, и ничего не выбрано
+      sendStateToSW({
+        type: "COUNTDOWN", targetTimestamp: null, targetLabel: null,
+        allDone: true, hasDeadlines: true,
+        enabled: notificationsEnabled && ("Notification" in window) && Notification.permission === "granted",
+        visible: document.visibilityState === "visible"
+      });
       el.timer.textContent        = "✓";
       el.timerCaption.textContent = "всё выполнено";
       el.targetLine.textContent   = "";
@@ -415,7 +464,12 @@
 
     const diff = target.date.getTime() - now.getTime();
     if (diff <= 0) {
-      // Выбранная точка уже в прошлом
+      sendStateToSW({
+        type: "COUNTDOWN", targetTimestamp: null, targetLabel: null,
+        allDone: true, hasDeadlines: true,
+        enabled: notificationsEnabled && ("Notification" in window) && Notification.permission === "granted",
+        visible: document.visibilityState === "visible"
+      });
       el.timer.textContent        = "✓";
       el.timerCaption.textContent = "выполнено";
       el.targetLine.textContent   = `до ${target.time}`;
@@ -424,6 +478,13 @@
       swipeDirection = null;
       return;
     }
+
+    sendStateToSW({
+      type: "COUNTDOWN", targetTimestamp: target.date.getTime(), targetLabel: target.time,
+      allDone: false, hasDeadlines: true,
+      enabled: notificationsEnabled && ("Notification" in window) && Notification.permission === "granted",
+      visible: document.visibilityState === "visible"
+    });
 
     el.timer.textContent        = humanDuration(diff);
     el.timerCaption.textContent = "осталось";
@@ -440,6 +501,11 @@
       swipeDirection = null;
     }
   }
+
+  // ---------- уведомления: отслеживание видимости ----------
+  document.addEventListener("visibilitychange", () => {
+    renderCountdown();
+  });
 
   // ---------- анимация секундной стрелки ----------
   function animateSecondDot() {
