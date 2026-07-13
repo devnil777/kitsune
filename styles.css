@@ -736,6 +736,15 @@ body {
   }
 }
 
+.hidden-time-picker {
+  position: fixed;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 200;
+  width: 1px;
+  height: 1px;
+}
+
 /* ------------------------------------------------------------
    Нижняя навигация
 ------------------------------------------------------------- */
@@ -1128,5 +1137,112 @@ body {
       url('settings.svg?v=2');
     background-position: center bottom;
     background-size: auto 35%;
+  }
+
+  /* desktop time picker modal */
+  .tp-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tp-overlay[hidden] {
+    display: none;
+  }
+
+  .tp-modal {
+    background: var(--surface);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    width: 280px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+  }
+
+  .tp-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 0;
+  }
+
+  .tp-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .tp-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+
+  .tp-close svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .tp-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 20px 20px;
+  }
+
+  .tp-input {
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 24px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+  }
+
+  .tp-input:focus {
+    border-color: #CCCCDB;
+  }
+
+  .tp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .tp-btn:active {
+    background: var(--surface);
+  }
+}
+
+/* mobile: hide desktop modal completely */
+@media (max-width: 899px) {
+  .tp-overlay {
+    display: none !important;
   }
 }

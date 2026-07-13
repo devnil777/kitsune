@@ -60,6 +60,10 @@
     notificationRow:   document.getElementById("notification-row"),
     notificationToggle: document.getElementById("notification-toggle"),
     aboutAddBtn:  document.getElementById("about-add-btn"),
+    tpOverlay:  document.getElementById("tp-overlay"),
+    tpInput:    document.getElementById("tp-input"),
+    tpBtn:      document.getElementById("tp-btn"),
+    tpClose:    document.getElementById("tp-close"),
   };
 
   // ---------- состояние ----------
@@ -228,28 +232,67 @@
   }, { passive: true });
 
   // ---------- быстрый выбор времени со стартового / about экрана ----------
-  el.ctaBtn.addEventListener("click", () => {
-    requestNotificationPermission();
-    el.hiddenPicker.value = "";
-    el.hiddenPicker.showPicker();
-  });
-
-  el.aboutAddBtn.addEventListener("click", () => {
-    markAboutSeen();
-    requestNotificationPermission();
-    el.hiddenPicker.value = "";
-    el.hiddenPicker.showPicker();
-  });
-
-  el.hiddenPicker.addEventListener("change", () => {
-    const val = el.hiddenPicker.value;
-    if (!isValidTime(val) || deadlines.includes(val)) return;
+  function addTime(val) {
+    if (!isValidTime(val) || deadlines.includes(val)) return false;
     deadlines.push(val);
     deadlines.sort();
     saveDeadlines(deadlines);
     renderSettings();
     renderCountdown();
     switchToScreen(screenOrder.indexOf("screen-countdown"));
+    return true;
+  }
+
+  function closeTimeModal() {
+    el.tpOverlay.hidden = true;
+  }
+
+  function openTimePicker(btnEl) {
+    requestNotificationPermission();
+    el.hiddenPicker.value = "";
+    if (window.innerWidth >= 900) {
+      el.tpInput.value = "09:00";
+      el.tpOverlay.hidden = false;
+      el.tpInput.focus();
+      el.tpInput.select();
+    } else {
+      el.hiddenPicker.showPicker();
+    }
+  }
+
+  el.ctaBtn.addEventListener("click", () => {
+    openTimePicker(el.ctaBtn);
+  });
+
+  el.aboutAddBtn.addEventListener("click", () => {
+    markAboutSeen();
+    openTimePicker(el.aboutAddBtn);
+  });
+
+  el.hiddenPicker.addEventListener("change", () => {
+    addTime(el.hiddenPicker.value);
+  });
+
+  el.tpBtn.addEventListener("click", () => {
+    if (addTime(el.tpInput.value)) closeTimeModal();
+  });
+
+  el.tpInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (addTime(el.tpInput.value)) closeTimeModal();
+    }
+    if (e.key === "Escape") closeTimeModal();
+  });
+
+  el.tpClose.addEventListener("click", closeTimeModal);
+
+  el.tpOverlay.addEventListener("click", e => {
+    if (e.target === el.tpOverlay) closeTimeModal();
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && !el.tpOverlay.hidden) closeTimeModal();
   });
 
   // ---------- добавление / удаление / редактирование ----------

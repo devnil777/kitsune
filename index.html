@@ -180,7 +180,26 @@
 
 </div>
 
-  <input type="time" id="hidden-time-picker" style="position:fixed;opacity:0;pointer-events:none;width:1px;height:1px" />
+  <input type="time" id="hidden-time-picker" class="hidden-time-picker" />
+
+  <!-- МОДАЛ: добавление времени (desktop) -->
+  <div class="tp-overlay" id="tp-overlay" hidden>
+    <div class="tp-modal">
+      <div class="tp-head">
+        <span class="tp-title">Добавить время</span>
+        <button class="tp-close" id="tp-close" aria-label="Закрыть">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="tp-body">
+        <input type="time" class="tp-input" id="tp-input" value="09:00" />
+        <button class="tp-btn" id="tp-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Добавить
+        </button>
+      </div>
+    </div>
+  </div>
 
 <script src="app.js"></script>
 </body>
