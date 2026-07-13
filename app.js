@@ -631,5 +631,8 @@
     window.addEventListener("load", () => {
       navigator.serviceWorker.register("sw.js?v=__CACHE_VERSION__").catch(() => {});
     });
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      window.location.reload();
+    });
   }
 })();
