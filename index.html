@@ -20,6 +20,41 @@
 
 <div class="app" id="app">
 
+  <!-- ЭКРАН: О ПРИЛОЖЕНИИ -->
+  <section class="screen screen--about" id="screen-about" data-active="false">
+    <div class="about-body">
+      <div class="about-content">
+
+        <div class="about-brand">
+          <h1 class="about-title">Кицунэ</h1>
+          <p class="about-subtitle">преврати дедлайн в свою суперсилу</p>
+        </div>
+
+        <div class="about-desc">
+          <p>Кицунэ помогает отслеживать время до важных событий каждый день. Добавьте контрольные точки: время встреч, созвонов, дедлайнов. Приложение покажет точный обратный отсчёт до каждой из них.</p>
+          <p>Кольцо прогресса наглядно показывает, сколько времени осталось до следующей точки. Уведомления напомнят о приближающемся событии, даже если приложение свёрнуто.</p>
+        </div>
+
+        <ul class="about-features">
+          <li>Контрольные точки на каждый день</li>
+          <li>Наглядный обратный отсчёт</li>
+          <li>Синхронизация между устройствами</li>
+        </ul>
+
+        <button class="about-btn" id="about-add-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          Добавить время
+        </button>
+
+        <a class="about-link" href="https://github.com/devnil777/kitsune" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Страница проекта на GitHub
+        </a>
+
+      </div>
+    </div>
+  </section>
+
   <!-- ЭКРАН: ОТСЧЁТ -->
   <section class="screen screen--countdown" id="screen-countdown" data-active="true">
     <div class="countdown-body">
@@ -137,6 +172,10 @@
     <button class="tab" data-target="screen-settings" data-tab="settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.6"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l1.9-1.5-2-3.4-2.3.9a7.6 7.6 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5a7.6 7.6 0 0 0-2.6 1.5l-2.3-.9-2 3.4L4.6 10.5a7.6 7.6 0 0 0 0 3L2.7 15l2 3.4 2.3-.9a7.6 7.6 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.6 7.6 0 0 0 2.6-1.5l2.3.9 2-3.4-1.9-1.5Z"/></svg>
       <span>Настройки</span>
+    </button>
+    <button class="tab" data-target="screen-about" data-tab="about">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r=".8" fill="currentColor"/></svg>
+      <span>Кицунэ</span>
     </button>
   </nav>
 

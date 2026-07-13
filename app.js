@@ -59,6 +59,7 @@
     logoutBtn:     document.getElementById("logout-btn"),
     notificationRow:   document.getElementById("notification-row"),
     notificationToggle: document.getElementById("notification-toggle"),
+    aboutAddBtn:  document.getElementById("about-add-btn"),
   };
 
   // ---------- состояние ----------
@@ -126,12 +127,28 @@
   el.authBtn.addEventListener("click", () => auth.signInWithPopup(googleProvider));
   el.logoutBtn.addEventListener("click", () => auth.signOut());
 
+  // ---------- первый визит ----------
+  const ABOUT_SEEN_KEY = "about-seen";
+  let aboutSeen = (() => {
+    try { return localStorage.getItem(ABOUT_SEEN_KEY) === "true"; } catch (e) { return false; }
+  })();
+
+  function markAboutSeen() {
+    if (aboutSeen) return;
+    aboutSeen = true;
+    try { localStorage.setItem(ABOUT_SEEN_KEY, "true"); } catch (e) {}
+  }
+
   // ---------- навигация ----------
-  const screenOrder = ["screen-countdown", "screen-settings"];
+  const screenOrder = ["screen-countdown", "screen-settings", "screen-about"];
   let activeScreenIdx = 0;
 
   function switchToScreen(idx) {
     if (idx < 0 || idx >= screenOrder.length) return;
+    const prevId = screenOrder[activeScreenIdx];
+    if (prevId === "screen-about" && screenOrder[idx] !== "screen-about") {
+      markAboutSeen();
+    }
     activeScreenIdx = idx;
     const targetId = screenOrder[idx];
     el.screens.forEach(s => { s.dataset.active = String(s.id === targetId); });
@@ -172,7 +189,7 @@
 
     // Вертикальный свайп — смена цели (только на экране отсчёта)
     if (Math.abs(dy) >= 60 && Math.abs(dx) < Math.abs(dy) * 0.9) {
-      if (activeScreenIdx !== 0) return;
+      if (screenOrder[activeScreenIdx] !== "screen-countdown") return;
       const now = new Date();
       const todayPoints = deadlines.map(t => ({ time: t, date: timeToDateToday(now, t) }));
       if (todayPoints.length < 2) return;
@@ -198,8 +215,15 @@
     }
   }, { passive: true });
 
-  // ---------- быстрый выбор времени со стартового экрана ----------
+  // ---------- быстрый выбор времени со стартового / about экрана ----------
   el.ctaBtn.addEventListener("click", () => {
+    requestNotificationPermission();
+    el.hiddenPicker.value = "";
+    el.hiddenPicker.showPicker();
+  });
+
+  el.aboutAddBtn.addEventListener("click", () => {
+    markAboutSeen();
     requestNotificationPermission();
     el.hiddenPicker.value = "";
     el.hiddenPicker.showPicker();
@@ -213,6 +237,7 @@
     saveDeadlines(deadlines);
     renderSettings();
     renderCountdown();
+    switchToScreen(screenOrder.indexOf("screen-countdown"));
   });
 
   // ---------- добавление / удаление / редактирование ----------
@@ -378,7 +403,10 @@
       chip.textContent = p.time;
       chip.addEventListener("click", () => {
         if (p.date.getTime() <= now.getTime() || selectedTargetTime === p.time) return;
+        const oldIdx = todayPoints.findIndex(tp => tp.time === selectedTargetTime);
+        const newIdx = todayPoints.findIndex(tp => tp.time === p.time);
         selectedTargetTime = p.time;
+        swipeDirection = newIdx >= 0 && oldIdx >= 0 && newIdx > oldIdx ? "up" : "down";
         renderCountdown();
       });
       el.pointsList.appendChild(chip);
@@ -513,7 +541,7 @@
       const now = new Date();
       const ms = now.getMilliseconds();
       const sec = now.getSeconds();
-      const deg = ((sec + ms / 1000) / 60) * 360;
+      const deg = ((sec + ms / 1000) / 60) * 360 + 90;
       el.secondDot.setAttribute("transform", `rotate(${deg}, 120, 120)`);
     }
     requestAnimationFrame(animateSecondDot);
@@ -535,6 +563,11 @@
   el.ringProgress.style.strokeDasharray = String(RING_CIRC);
   renderSettings();
   renderCountdown();
+
+  if (!aboutSeen) {
+    switchToScreen(screenOrder.indexOf("screen-about"));
+  }
+
   setInterval(renderCountdown, 1000);
   animateSecondDot();
 
