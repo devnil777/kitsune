@@ -149,9 +149,21 @@
     if (prevId === "screen-about" && screenOrder[idx] !== "screen-about") {
       markAboutSeen();
     }
+    const oldIdx = activeScreenIdx;
     activeScreenIdx = idx;
+    const dir = idx > oldIdx ? "next" : idx < oldIdx ? "prev" : null;
     const targetId = screenOrder[idx];
-    el.screens.forEach(s => { s.dataset.active = String(s.id === targetId); });
+    el.screens.forEach(s => {
+      delete s.dataset.switch;
+      s.dataset.active = String(s.id === targetId);
+      if (s.id === targetId && dir) {
+        void s.offsetWidth;
+        s.dataset.switch = dir;
+        s.addEventListener("animationend", () => {
+          delete s.dataset.switch;
+        }, { once: true });
+      }
+    });
     el.tabs.forEach(t => { t.setAttribute("aria-current", String(t.dataset.target === targetId)); });
     if (targetId === "screen-settings") renderSettings();
   }

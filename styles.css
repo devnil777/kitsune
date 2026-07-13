@@ -262,6 +262,20 @@ body {
   from { transform: translateY(-18px); opacity: 0.3; }
 }
 
+.screen[data-active="true"][data-switch="next"] {
+  animation: slideNext 0.3s ease-out;
+}
+.screen[data-active="true"][data-switch="prev"] {
+  animation: slidePrev 0.3s ease-out;
+}
+
+@keyframes slideNext {
+  from { transform: translateX(40px); opacity: 0.6; }
+}
+@keyframes slidePrev {
+  from { transform: translateX(-40px); opacity: 0.6; }
+}
+
 .no-points-msg {
   font-size: 14px;
   color: var(--text-dim);
