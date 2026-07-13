@@ -35,6 +35,8 @@ body {
   font-family: var(--font-body);
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .app {
@@ -597,6 +599,8 @@ body {
   letter-spacing: -0.02em;
   color: var(--text);
   line-height: 1.1;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 .about-subtitle {
@@ -606,12 +610,16 @@ body {
   text-transform: uppercase;
   color: var(--text-dim);
   font-weight: 500;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 .about-desc {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 .about-desc p {
@@ -630,6 +638,8 @@ body {
   flex-direction: column;
   gap: 10px;
   width: 100%;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 .about-features li {
@@ -688,6 +698,12 @@ body {
 .about-link:hover {
   color: var(--text);
   text-decoration: underline;
+}
+
+.about-version {
+  font-size: 11px;
+  color: var(--text-dim);
+  opacity: 0.45;
 }
 
 @media (orientation: landscape) {
